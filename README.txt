@@ -1,37 +1,101 @@
-This archive contains some Wireshark captures of various port scans done with nmap.
-Wireshark was configured to capture everything. It was done from the target with interface in promiscuous mode.
+Absolut\! Ein gut strukturiertes `README.md` ist entscheidend für jedes GitHub-Projekt. Es ist die erste Anlaufstelle für jeden, der dein Projekt sieht.
 
+Hier ist ein Entwurf für deine `README.md`-Datei, komplett auf Englisch und mit einem Autor-Feld am Ende.
 
--nmap_standard_scan
-This scan is done with the default nmap settings.
-Command: 
-	nmap 192.168.100.102
+Du kannst diesen Text einfach in eine Datei namens `README.md` in deinem Projektordner kopieren und dann zu deinem Repository hinzufügen und pushen.
 
--nmap_ACK_scan_on_port_80
-This is a simple ACK scan on port 80 skipping the ping scan for checking if host is alive.
-Command: 
-	nmap -p80 -sA -Pn 192.168.100.102
+-----
 
--nmap_ACK_scan_on_port_80
-This is an ACK scan on port 80 using fragmentation and spoofing our IP address to evade IDS.
-Notice how our scan seems to be coming from a different IP than ours.
-Command:
-	nmap -p80 -sA -Pn -f -S 192.168.100.101 -e eth0 192.168.100.102
+### **`README.md` Inhalt**
 
--nmap_zombie_scan
-This is a zombie scan on port 80. For the target (192.168.100.102) it appears as if 192.168.100.101 (the zombie) was doing the scanning.
-This keeps us (192.168.100.103) invisible but the communication between us and our zombie is pretty "noisy".
-Some requirements for this scan is that the zombie is online, idle and has a port which responds to probing so we can use(in this case 2869)
-Command:
-	nmap -p80 -Pn -sI 192.168.100.101:2869 192.168.100.102
+````markdown
+# PcapAnalyzer
 
--nmap_OS_scan
-This is a failed OS scan against our target. For an OS scan to be succesful there needs to be at least one closed port and one open port.
-Our target had only filtered ports.
-Command:
-	nmap -O -Pn 192.168.100.102
+A powerful and user-friendly Python script for network security analysis, focusing on identifying various network scan types and extracting plaintext credentials or sensitive file operations from Packet Capture (PCAP) files. Designed for cybersecurity labs, blue team exercises, and network forensics.
 
--nmap_OS_scan_suucesful
-This is a succesful OS scan against a target which has one open port and one closed port.
-Command:
-	nmap -O -Pn 192.168.100.101
+## Features
+
+* **Network Scan Analysis:**
+    * Identifies and classifies common network scan types (e.g., TCP Connect, SYN, FIN, XMAS, NULL, ACK Scans).
+    * Detects and highlights **Suspected Zombie Hosts (Idle Scans)** with detailed reasoning.
+    * Provides comprehensive reports including source IP, scan type, timestamps, duration, unique targets, unique ports, used protocols, and TCP flags.
+    * Supports adjustable thresholds for scan detection.
+
+* **Plaintext Credential & File Operation Extraction:**
+    * Extracts usernames and passwords transmitted in plaintext or easily decodable formats.
+    * Detects sensitive file operations.
+    * **Prioritized Reporting:** Urgent alerts for full plaintext username/password pairs, followed by other sensitive findings.
+    * **Supported Protocols / Types:**
+        * **FTP:** `USER` and `PASS` commands.
+        * **HTTP Basic Authentication:** Base64-decoded credentials from `Authorization` headers.
+        * **HTTP POST Forms:** Common username/password parameters from URL-encoded form data (e.g., `user=...&pass=...`).
+        * **Telnet:** Heuristic detection of usernames and passwords following login prompts.
+        * **POP3:** `USER` and `PASS` commands.
+        * **IMAP:** `LOGIN` commands (plaintext) and `AUTHENTICATE PLAIN` (Base64-decoded).
+        * **SMTP:** `AUTH LOGIN` (Base64-decoded parts) and `AUTH PLAIN` (Base64-decoded).
+        * **SNMP:** Community Strings.
+        * **TFTP:** Read (RRQ) and Write (WRQ) requests, extracting filenames and transfer modes.
+
+* **JSON Export:**
+    * Option to save all analysis reports (network scans, credential findings) into structured JSON files for further processing or archival.
+
+* **Interactive User Interface:**
+    * A simple, menu-driven command-line interface for easy navigation between analysis modes.
+
+## How to Use
+
+### Prerequisites
+
+* Python 3.x installed.
+* `scapy` library installed. You can install it via pip:
+    ```bash
+    pip install scapy
+    ```
+
+### Running the Script
+
+1.  **Save the script:** Save the `pcap_analyzer.py` file to your local machine.
+2.  **Prepare PCAP files:** Place your `.pcap` or `.pcapng` files in the same directory as the script, or in a subfolder (e.g., `captures/`).
+3.  **Execute:** Open your terminal or command prompt, navigate to the script's directory, and run:
+    ```bash
+    python pcap_analyzer.py
+    ```
+4.  **Follow the menu:** The script will present an interactive menu.
+
+    ```
+    --- Please select an option ---
+    1. Network Scan Analysis
+    2. Credential & File Operations
+    3. Exit
+    Your choice (1, 2 or 3):
+    ```
+
+    * **Option 1 (Network Scan Analysis):** You will be prompted for a PCAP file path and can adjust scan detection thresholds.
+    * **Option 2 (Credential & File Operations):** You will be prompted for a PCAP file path to extract sensitive information.
+    * **Option 3 (Exit):** Terminates the script.
+
+### Example PCAP Files for Testing
+
+You can find various sample PCAP files on the [Wireshark Sample Captures](https://wiki.wireshark.org/SampleCaptures) page. Recommended files for testing specific features include:
+
+* **Network Scans:** `nmap-scan-2.pcap`, `nmap_zombie_scan.pcap`
+* **FTP:** `ftp.pcap`
+* **POP3:** `pop3.pcap`
+* **IMAP:** `imap.pcap`
+* **SMTP:** `smtp.pcap`
+* **Telnet:** `telnet.pcap`
+* **TFTP:** `tftp.pcap`
+* **SNMP:** `snmp.pcap`
+* **HTTP Basic Auth / POST:** These are rarely found in public samples due to security concerns. For reliable testing, you might need to create your own PCAP by performing unencrypted HTTP logins in a test environment.
+
+## Disclaimer
+
+This tool is intended for **educational purposes, cybersecurity labs, and ethical network analysis only**. Use it responsibly and only on networks where you have explicit permission. Unauthorized access or interception of network traffic is illegal and unethical.
+
+---
+
+## Author
+
+Tobias Kastenhuber / LiRiX2
+
+---
